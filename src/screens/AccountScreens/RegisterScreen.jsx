@@ -13,7 +13,12 @@ const RegisterScreen = () => {
     const navigation = useNavigation()
 
     const handleRegister = () => {
-        Alert.alert('Register', `Full Name: ${name}\nEmail: ${email}\nPassword: ${password}`);
+        Alert.alert('Register', `You have successfully created account with XKillZ platform. Please proceed further.`, [
+            {
+                text: "OK",
+                onPress: () => navigation.navigate('ProfileDetailsPartOne') // Replace with your screen name
+            }
+        ]);
     };
     const gotoLoginPage = () =>{
         navigation.navigate("Login")
@@ -23,7 +28,7 @@ const RegisterScreen = () => {
         <SafeAreaView style={styles.container}>
             {/* container for logo and text */}
             <View style={styles.logoImgTextContainer}>
-                <Image source={require("../assets/XKillZ_Logo.png")} style={{width: 150, height: 100}} />
+                <Image source={require("../../assets/XKillZ_Logo.png")} style={{width: 150, height: 100}} />
             </View>
             {/* Container for login input field, text */}
             <View style={styles.loginTextFieldContainer}>
@@ -52,7 +57,7 @@ const RegisterScreen = () => {
             <View style={styles.socialIcons}>
                 <View style={styles.iconBox}>
                     {/* <FontAwesome name="google" size={25} color=""/> */}
-                    <Image source={require("../assets/google.png")} style={{height: 20, width: 20}} />
+                    <Image source={require("../../assets/google.png")} style={{height: 20, width: 20}} />
                 </View>
                 <View style={styles.iconBox}>
                     <FontAwesome name="facebook" size={25} color="#0D62EA"/>
