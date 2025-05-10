@@ -14,6 +14,7 @@ import NewPasswordSetupSuccessScreen from './src/screens/AccountScreens/NewPassw
 import ProfileDetailsPartOne from './src/screens/AccountScreens/ProfileDetailsPartOne';
 import ProfileDetailsPartTwo from './src/screens/AccountScreens/ProfileDetailsPartTwo';
 import ProfileDetailsPartThree from './src/screens/AccountScreens/ProfileDetailsPartThree';
+import BottomNavigation from './src/navigations/BottomNavigation';
 
 
 
@@ -24,12 +25,14 @@ const App = () => {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions=
-        {{ headerShown: false, }} initialRouteName='ProfileDetailsPartThree'>
+        {{ headerShown: false, }} initialRouteName='Home'>
         <Stack.Screen name="InitialLoading" component={InitialLoadingScreen} />
         <Stack.Screen name="Pupil" component={PupilScreen} />
         <Stack.Screen name="Guide" component={GuideScreen} />
         <Stack.Screen name="Collaborate" component={CollaborateScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
+        {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
+        <Stack.Screen name="Home" component={BottomNavigation} />
+
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="PasswordReset" component={PasswordResetScreen}  />
