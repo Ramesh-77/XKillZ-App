@@ -2,9 +2,11 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Foundation from 'react-native-vector-icons/Foundation';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from '../screens/HomeScreen';
 import { StyleSheet, View } from 'react-native';
 import GroupCommunityStack from './GroupCommunityStack';
+import EventStack from './EventStack';
 
 
 
@@ -12,7 +14,7 @@ const Tab = createBottomTabNavigator();
 
 const BottomNavigation = () => (
     <Tab.Navigator
-    initialRouteName='Group&Community'
+    initialRouteName='Events'
         screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, size  }) => {
                 
@@ -31,6 +33,15 @@ const BottomNavigation = () => (
                     return (
                         <View style={ focused ? styles.iconContainer : null}>
                             <Foundation name={iconName} size={25} color="#fff" />
+                        </View>
+                    );
+                }
+                // for events screen
+                if (route.name === 'Events') {
+                    const iconName = focused ? 'event' : 'event'; // Use Foundation icons
+                    return (
+                        <View style={ focused ? styles.iconContainer : null}>
+                            <MaterialIcons name={iconName} size={25} color="#fff" />
                         </View>
                     );
                 }
@@ -77,6 +88,7 @@ const BottomNavigation = () => (
     >
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Group&Community" component={GroupCommunityStack} />
+        <Tab.Screen name="Events" component={EventStack} />
 
     </Tab.Navigator>
 );

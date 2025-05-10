@@ -1,11 +1,29 @@
-import React from 'react';
-import { SafeAreaView, Text, View, TextInput, StyleSheet, Pressable, Image} from 'react-native';
+import React, { useState } from 'react';
+import { SafeAreaView, Text, View, TextInput, StyleSheet, Pressable, Image, ScrollView } from 'react-native';
 import Header from '../../components/Header';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { dummySkillUsers } from '../../utils/dummySkillUsers';
+import { useNavigation } from '@react-navigation/native';
 
-const SingleSkillList = ({route}) => {
+const SingleSkillList = ({ route }) => {
     const { skillName = 'SKill' } = route.params; // Get the skill name from the route params
+    // State to handle the search query
+    const [searchQuery, setSearchQuery] = useState('');
+    const navigation = useNavigation();
+    // get the skill list user
+    const users = dummySkillUsers[skillName] || []; // Default to an empty array if no users found for the skill
+    // Filter users based on the search query (matching title or name)
+    const filteredUsers = searchQuery
+        ? users.filter(user =>
+            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        : users; // Show all users if no search query
+
+
     return (
         <SafeAreaView style={styles.safeArea}>
             {/* Header */}
@@ -14,7 +32,8 @@ const SingleSkillList = ({route}) => {
             <View style={styles.searchInputIconVoiceIconContainer}>
                 <View style={styles.searchIconInputContainer}>
                     <Ionicons name="search" style={styles.searchIcon} />
-                    <TextInput placeholder={skillName} style={styles.textInput} />
+                    <TextInput placeholder={skillName} style={styles.textInput} value={searchQuery}
+                        onChangeText={setSearchQuery} />
                 </View>
                 <Pressable style={styles.voiceIconContainer} >
                     <MaterialIcons name="keyboard-voice" size={25} color='#000' />
@@ -30,21 +49,69 @@ const SingleSkillList = ({route}) => {
 
                 </View>
                 {/* individual skill list */}
-                <View style={{ flex: 1, flexDirection: "column",  }}>
-                   <View style={{backgroundColor: "#09B4E4", width: "100%", borderRadius: 5, padding: 50, marginBottom: 10}}>
-                    <View style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}>
-                        <Image source={require('../../assets/XKillZ_Logo.png')} style={{width: 80, height: 80}}/>
-                        <View style={{}}>
-                            <Text style={{fontSize: 20, fontWeight: "bold", color: "#ffffff"}}>Benjamin Engel</Text>
-                            <Text style={{fontSize: 15, fontWeight: "bold", color: "#ffffff"}}>Java Developer - star</Text>
-                            <Text style={{fontSize: 15, fontWeight: "bold", color: "#ffffff"}}>Java Developer - star</Text>
-                            <Pressable><Text>Swap</Text></Pressable>
+                {/* Render filtered user list */}
+                <ScrollView style={{ flex: 1, flexDirection: "column" }} showsVerticalScrollIndicator={false}>
+                    {/* render user data dynamically */}
+                    {/* Render user data dynamically */}
+                    {filteredUsers.length > 0 ? (
+                        filteredUsers.map((user) => (
+                            <View key={user?.id} style={{ backgroundColor: "#09B4E4", width: "100%", borderRadius: 10, paddingVertical: 20, paddingStart: 15, marginBottom: 10 }} >
+                                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 20 }}>
+                                    <Pressable onPress={() => navigation.navigate('SingleSkillUserDetail', { user })}>
+                                    <Image source={user?.image} style={{ width: 100, height: 100, borderRadius: 50 }} />
+                                    </Pressable>
+                                    <View>
+                                        <Text style={{ fontSize: 20, fontWeight: "bold", letterSpacing: 1 }}>{user?.name}</Text>
+                                        <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginTop: 5 }}>
+                                            <Text style={{ fontSize: 15 }}>{user?.title} - </Text>
+                                            <View style={{ flexDirection: "row", alignItems: "center", gap: 1 }}>
+                                                {[1, 2, 3, 4, 5].map((_, i) => (
+                                                    <Ionicons
+                                                        key={i}
+                                                        name="star"
+                                                        size={15}
+                                                        color={i < user.rating ? '#FFD95A' : '#000'}
+                                                    />
+                                                ))}
+                                                {/* <Ionicons name="star" size={15} color="#FFD95A" />
+                                        <Ionicons name="star" size={15} color="#FFD95A" />
+                                        <Ionicons name="star" size={15} color="#FFD95A" />
+                                        <Ionicons name="star" size={15} color="#FFD95A" />
+                                        <Ionicons name="star" size={15} color="#000000" /> */}
+                                            </View>
+                                        </View>
+                                        <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginTop: 5 }}>
+                                            <Text style={{ fontSize: 15 }}>Experience = </Text>
+                                            <Text style={{ fontSize: 15, fontWeight: "bold" }}>{user?.experience}</Text>
+                                        </View>
+                                        {/* like swap comment box */}
+                                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginVertical: 10, }}>
+                                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                                                <Ionicons name="heart-outline" size={20} color="#000" />
+                                                <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 5 }}>{user?.likes}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                                                <AntDesign name="swap" size={20} color="#000" />
+                                                <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 5 }}>{user?.swaps}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                                                <Fontisto name="commenting" size={20} color="#000" />
+                                                <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 5 }}>{user?.comments}</Text>
+                                            </View>
+                                        </View>
+                                        <Pressable style={{ width: "100%", backgroundColor: "#000", alignItems: "center", paddingVertical: 8, borderRadius: 10 }}><Text style={{ letterSpacing: 1, fontWeight: 'bold', fontSize: 15, color: "#ffffff" }}>SWAP</Text></Pressable>
+                                    </View>
+                                </View>
+                            </View>
+                        ))) : (
+                        <View>
+                            <Text style={{ fontSize: 25, textAlign: "center" }}>No users found for</Text>
+                            <Text style={{ fontWeight: "bold", fontSize: 30, textAlign: "center" }}>{searchQuery ? searchQuery : skillName}</Text>
                         </View>
-                    </View>
-                   </View>
-                   
-                    
-                </View>
+                    )
+                    }
+
+                </ScrollView>
             </View>
 
         </SafeAreaView>
