@@ -3,10 +3,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import HomeScreen from '../screens/HomeScreen';
 import { StyleSheet, View } from 'react-native';
 import GroupCommunityStack from './GroupCommunityStack';
 import EventStack from './EventStack';
+import SkillXChangeStack from './SkillXChangeStack';
 
 
 
@@ -42,6 +44,15 @@ const BottomNavigation = () => (
                     return (
                         <View style={ focused ? styles.iconContainer : null}>
                             <MaterialIcons name={iconName} size={25} color="#fff" />
+                        </View>
+                    );
+                }
+                // for skill xchange screen
+                if (route.name === 'SkillXChange') {
+                    const iconName = focused ? 'swap' : 'swap'; // Use Foundation icons
+                    return (
+                        <View style={ focused ? styles.iconContainer : null}>
+                            <AntDesign name={iconName} size={25} color="#fff" />
                         </View>
                     );
                 }
@@ -89,6 +100,7 @@ const BottomNavigation = () => (
         <Tab.Screen name="Home" component={HomeScreen} />
         <Tab.Screen name="Group&Community" component={GroupCommunityStack} />
         <Tab.Screen name="Events" component={EventStack} />
+        <Tab.Screen name="SkillXChange" component={SkillXChangeStack} />
 
     </Tab.Navigator>
 );

@@ -1,17 +1,17 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import EventsScreen from '../screens/Events/EventsScreen';
+import SkillXChangeScreen from '../screens/SkillXChange/SkillXChangeScreen';
 
 
 
 const Stack = createNativeStackNavigator();
 
-const EventStack = () => {
+const SkillXChangeStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName='SkillXChange'>
       <Stack.Screen 
-        name="Events" 
-        component={EventsScreen} 
+        name="SkillXChange" 
+        component={SkillXChangeScreen} 
         options={{ headerShown: false }} 
       />
      
@@ -20,4 +20,4 @@ const EventStack = () => {
   );
 };
 
-export default EventStack;
+export default SkillXChangeStack;

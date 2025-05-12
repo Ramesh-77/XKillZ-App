@@ -26,21 +26,18 @@ const eventsData = [
     }
 ];
 
-
 const EventsScreen = () => {
-    // State to track liked events
     const [likedEvents, setLikedEvents] = useState({});
     const [isDropdownVisible, setDropdownVisible] = useState(false);
-    const [selectedFilter, setSelectedFilter] = useState(null);
+    const [selectedFilter, setSelectedFilter] = useState('All Events');
 
-
-    // Function to handle heart icon click
     const toggleLike = (eventId) => {
         setLikedEvents(prevState => ({
             ...prevState,
-            [eventId]: !prevState[eventId], // Toggle liked state for the specific event
+            [eventId]: !prevState[eventId],
         }));
     };
+
     const toggleDropdown = () => {
         setDropdownVisible(!isDropdownVisible);
     };
@@ -48,29 +45,38 @@ const EventsScreen = () => {
     const closeDropdown = () => {
         setDropdownVisible(false);
     };
+
+    const handleFilterSelect = (filter) => {
+        setSelectedFilter(filter);
+        closeDropdown();
+    };
+
+    const filteredEvents = selectedFilter === 'My Events'
+        ? eventsData.filter(event => likedEvents[event.id])
+        : eventsData;
+
     return (
         <SafeAreaView style={styles.safeArea}>
-            {/* Dropdown Overlay */}
             {isDropdownVisible && (
                 <TouchableWithoutFeedback onPress={closeDropdown}>
                     <View style={styles.dropdownOverlay}>
                         <TouchableWithoutFeedback>
                             <View style={styles.dropdownMenu}>
-                                <TouchableOpacity onPress={() => setSelectedFilter('All Events')}>
+                                <TouchableOpacity onPress={() => handleFilterSelect('All Events')}>
                                     <Text style={[
                                         styles.dropdownItem,
                                         selectedFilter === 'All Events' && styles.selectedDropdownItem
                                     ]}>All Events</Text>
                                 </TouchableOpacity>
                                 <View style={styles.dropdownDivider} />
-                                <TouchableOpacity onPress={() => setSelectedFilter('My Events')}>
+                                <TouchableOpacity onPress={() => handleFilterSelect('My Events')}>
                                     <Text style={[
                                         styles.dropdownItem,
                                         selectedFilter === 'My Events' && styles.selectedDropdownItem
                                     ]}>My Events</Text>
                                 </TouchableOpacity>
                                 <View style={styles.dropdownDivider} />
-                                <TouchableOpacity onPress={() => setSelectedFilter('Pick for Me')}>
+                                <TouchableOpacity onPress={() => handleFilterSelect('Pick for Me')}>
                                     <Text style={[
                                         styles.dropdownItem,
                                         selectedFilter === 'Pick for Me' && styles.selectedDropdownItem
@@ -81,7 +87,7 @@ const EventsScreen = () => {
                     </View>
                 </TouchableWithoutFeedback>
             )}
-            {/* Header */}
+
             <View style={styles.header}>
                 <Text style={styles.headerText}>Events</Text>
                 <TouchableOpacity onPress={toggleDropdown}>
@@ -90,33 +96,35 @@ const EventsScreen = () => {
             </View>
 
             <ScrollView contentContainerStyle={styles.mainContents}>
-                {eventsData.map((event) => (
-                    <View key={event.id} style={styles.eventWrapper}>
-                        <View style={styles.eventCard}>
-                            <Image source={event.image} style={styles.eventImage} />
-                            <View style={styles.eventInfo}>
-                                <Text style={styles.eventTitle}>{event.title}</Text>
+                {filteredEvents.length === 0 ? (
+                    <Text style={styles.emptyMessage}>No events found for "{selectedFilter}"</Text>
+                ) : (
+                    filteredEvents.map((event) => (
+                        <View key={event.id} style={styles.eventWrapper}>
+                            <View style={styles.eventCard}>
+                                <Image source={event.image} style={styles.eventImage} />
+                                <View style={styles.eventInfo}>
+                                    <Text style={styles.eventTitle}>{event.title}</Text>
 
-                                <View style={styles.eventLocation}>
-                                    <Ionicons name="location-outline" size={16} />
-                                    <Text style={styles.locationText}>{event.location}</Text>
+                                    <View style={styles.eventLocation}>
+                                        <Ionicons name="location-outline" size={16} />
+                                        <Text style={styles.locationText}>{event.location}</Text>
+                                    </View>
+
+                                    <Text style={styles.eventDate}>{event.date}</Text>
                                 </View>
-
-                                <Text style={styles.eventDate}>{event.date}</Text>
+                                <TouchableOpacity onPress={() => toggleLike(event.id)}>
+                                    <Ionicons
+                                        name={likedEvents[event.id] ? "heart" : "heart-outline"}
+                                        size={30}
+                                        color={likedEvents[event.id] ? 'red' : 'gray'}
+                                    />
+                                </TouchableOpacity>
                             </View>
-                            <TouchableOpacity onPress={() => toggleLike(event.id)}>
-                                <Ionicons
-                                    name={likedEvents[event.id] ? "heart" : "heart-outline"} // Toggle between heart and heart-outline
-                                    size={30}
-                                    color={likedEvents[event.id] ? 'red' : 'gray'} // Change color when liked
-                                />
-                            </TouchableOpacity>
+                            <View style={styles.horizontalLine} />
                         </View>
-
-                        {/* Horizontal Line */}
-                        <View style={styles.horizontalLine} />
-                    </View>
-                ))}
+                    ))
+                )}
             </ScrollView>
         </SafeAreaView>
     );
@@ -142,21 +150,21 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         right: 0,
-        zIndex: 1, // Makes sure the header stays on top
+        zIndex: 1,
         marginVertical: "5%",
     },
 
     headerText: {
         fontSize: 25,
-        fontWeight: 'semi-bold',
+        fontWeight: '600',
         color: "#ffffff",
     },
 
     mainContents: {
         paddingStart: 20,
-        paddingTop: 120,  // Increased top padding to account for the header
-        paddingBottom: 20,  // Ensure space at the bottom
-        alignItems: "center",  // Center the event cards
+        paddingTop: 120,
+        paddingBottom: 20,
+        alignItems: "center",
     },
 
     eventWrapper: {
@@ -186,7 +194,7 @@ const styles = StyleSheet.create({
     },
 
     eventTitle: {
-        flexWrap: 'wrap', // Ensure text wraps
+        flexWrap: 'wrap',
         fontWeight: 'bold',
         fontSize: 16,
         marginBottom: 5,
@@ -209,10 +217,10 @@ const styles = StyleSheet.create({
     horizontalLine: {
         width: '100%',
         height: 1,
-        backgroundColor: '#ababab', // Line color
-        marginTop: 10, // Adjust for spacing
+        backgroundColor: '#ababab',
+        marginTop: 10,
     },
-    // css for dropdown
+
     dropdownOverlay: {
         position: 'absolute',
         top: 70,
@@ -243,13 +251,21 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#ffffff',
     },
+
     dropdownDivider: {
         height: 1,
         backgroundColor: '#ccc',
         marginVertical: 5,
     },
+
     selectedDropdownItem: {
-        color: '#09B4E4', // Highlight color
+        color: '#09B4E4',
         fontWeight: 'bold',
+    },
+
+    emptyMessage: {
+        fontSize: 16,
+        color: '#555',
+        marginTop: 50,
     },
 });
