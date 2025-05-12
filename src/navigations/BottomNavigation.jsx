@@ -9,6 +9,7 @@ import { StyleSheet, View } from 'react-native';
 import GroupCommunityStack from './GroupCommunityStack';
 import EventStack from './EventStack';
 import SkillXChangeStack from './SkillXChangeStack';
+import AccountStack from './AccountStack';
 
 
 
@@ -16,7 +17,7 @@ const Tab = createBottomTabNavigator();
 
 const BottomNavigation = () => (
     <Tab.Navigator
-    initialRouteName='Events'
+    initialRouteName='Account'
         screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, size  }) => {
                 
@@ -50,6 +51,15 @@ const BottomNavigation = () => (
                 // for skill xchange screen
                 if (route.name === 'SkillXChange') {
                     const iconName = focused ? 'swap' : 'swap'; // Use Foundation icons
+                    return (
+                        <View style={ focused ? styles.iconContainer : null}>
+                            <AntDesign name={iconName} size={25} color="#fff" />
+                        </View>
+                    );
+                }
+                   // for profile account screen
+                   if (route.name === 'Account') {
+                    const iconName = focused ? 'user' : 'user'; // Use Foundation icons
                     return (
                         <View style={ focused ? styles.iconContainer : null}>
                             <AntDesign name={iconName} size={25} color="#fff" />
@@ -101,6 +111,7 @@ const BottomNavigation = () => (
         <Tab.Screen name="Group&Community" component={GroupCommunityStack} />
         <Tab.Screen name="Events" component={EventStack} />
         <Tab.Screen name="SkillXChange" component={SkillXChangeStack} />
+        <Tab.Screen name="Account" component={AccountStack} />
 
     </Tab.Navigator>
 );
