@@ -4,9 +4,11 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 
 const MyAccountScreen = () => {
+    const navigation = useNavigation();
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.header}>
@@ -88,7 +90,7 @@ const MyAccountScreen = () => {
                 <View style={styles.btnContainer}>
                     <View style={styles.iconBtnBox}>
                         <AntDesign name="user" size={20} color="#09B4E4" style={{marginEnd: 10}} />
-                        <Pressable>
+                        <Pressable onPress={() => navigation.navigate("MyProfile")}>
                             <Text  style={styles.btn}>Personal Details</Text>
                         </Pressable>
                     </View>
