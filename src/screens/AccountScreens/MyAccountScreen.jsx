@@ -99,7 +99,7 @@ const MyAccountScreen = () => {
                 <View style={styles.btnContainer}>
                     <View style={styles.iconBtnBox}>
                         <AntDesign name="clockcircleo" size={20} color="#09B4E4" style={{marginEnd: 10}}/>
-                        <Pressable>
+                        <Pressable onPress={() => navigation.navigate("ClassScheduleScreen")}>
                             <Text  style={styles.btn}>Schedule Classes</Text>
                         </Pressable>
                     </View>
