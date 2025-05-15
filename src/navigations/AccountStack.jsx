@@ -1,8 +1,10 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MyAccountScreen from '../screens/AccountScreens/MyAccountScreen';
-import MyProfileScreen from '../screens/AccountScreens/MyProfileScreen';
-import ClassScheduleScreen from '../screens/AccountScreens/ClassScheduleScreen';
+import MyProfileScreen from '../screens/AccountScreens/ProfileDetails/MyProfileScreen';
+import ClassScheduleScreen from '../screens/AccountScreens/ScheduleClass/ClassScheduleScreen';
+import SelectPersonScreen from '../screens/AccountScreens/SelectPersonScheduleClass/SelectPersonScreen';
+import ChatScreen from '../screens/AccountScreens/ChatScreen/ChatScreen';
 
 
 
@@ -25,6 +27,16 @@ const AccountStack = () => {
       <Stack.Screen
         name="ClassScheduleScreen"
         component={ClassScheduleScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SelectPersonScreen"
+        component={SelectPersonScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ChatScreen"
+        component={ChatScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

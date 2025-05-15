@@ -339,7 +339,7 @@ const ClassScheduleScreen = () => {
                         <Pressable style={{ backgroundColor: "grey", padding: 10, borderRadius: 10 }}>
                             <Text style={{ color: "#fff", letterSpacing: 1 }}>Cancel</Text>
                         </Pressable>
-                        <Pressable style={{ backgroundColor: "#09B4E4", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 }}>
+                        <Pressable style={{ backgroundColor: "#09B4E4", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 10 }} onPress={() => navigation.navigate("SelectPersonScreen")}>
                             <Text style={{ color: "#fff", letterSpacing: 1 }}>OK</Text>
                         </Pressable>
                     </View>

@@ -24,7 +24,7 @@ const MyProfileScreen = () => {
             </View>
             <View style={styles.mainContents}>
                 <View style={{ alignItems: "center", justifyContent: "center", gap: 10 }}>
-                    <Image source={require('../../assets/coder.jpg')} style={{ height: 120, width: 120, borderRadius: 60 }} />
+                    <Image source={require('../../../assets/coder.jpg')} style={{ height: 120, width: 120, borderRadius: 60 }} />
                     <Text style={{ fontWeight: "bold", fontSize: 18 }}>Benjamin Engel</Text>
                     <Text style={{ fontWeight: "bold", fontSize: 20 }}>Java Developer (GOOGLE)</Text>
                 </View>
