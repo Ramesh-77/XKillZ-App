@@ -1,36 +1,68 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, TextInput, StyleSheet, Alert, Pressable, Image, Dimensions } from 'react-native';
+import {
+    SafeAreaView, View, Text, TextInput, StyleSheet,
+    Alert, Pressable, Image, Dimensions
+} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal';
-// import { BlurView } from '@react-native-community/blur';
-
 
 const { width, height } = Dimensions.get('window');
+
 const LoginScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [resetEmail, setResetEmail] = useState('');
-    const [isChecked, setIsChecked] = useState(false);
-    const [showPassResetModal, setShowPassResetModal] = useState(false)
-    const [showOtpModal, setShowOtpModal] = useState(false); // OTP modal state
-    const navigation = useNavigation()
     const [otp, setOtp] = useState(['', '', '', '']);
+    const [showPassword, setShowPassword] = useState(false);
+    const [isChecked, setIsChecked] = useState(false);
+    const [showPassResetModal, setShowPassResetModal] = useState(false);
+    const [showOtpModal, setShowOtpModal] = useState(false);
+
+    const navigation = useNavigation();
     const otpInputs = [];
 
+    // Validation states
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [resetEmailError, setResetEmailError] = useState('');
+    const [otpError, setOtpError] = useState('');
+
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
     const handleLogin = () => {
-        Alert.alert('Login', `Email: ${email}\nPassword: ${password}`);
+        let valid = true;
+
+        if (!email || !isValidEmail(email)) {
+            setEmailError('Please enter a valid email');
+            valid = false;
+        } else {
+            setEmailError('');
+        }
+
+        if (!password) {
+            setPasswordError('Password cannot be empty');
+            valid = false;
+        } else {
+            setPasswordError('');
+        }
+
+        if (valid) {
+            navigation.navigate('Home');
+        }
     };
-    const gotoRegisterPage = () => {
-        navigation.navigate("Register")
-    }
+
     const handlePasswordReset = () => {
-        // Alert.alert("Reset Link Sent", `Reset link sent to ${resetEmail}`);
-        // setResetEmail('');
+        if (!resetEmail || !isValidEmail(resetEmail)) {
+            setResetEmailError('Enter a valid email');
+            return;
+        }
+        setResetEmailError('');
         setShowPassResetModal(false);
-        setShowOtpModal(true); // Show OTP modal after sending reset link
+        setShowOtpModal(true);
     };
+
     const handleOtpChange = (text, index) => {
         if (/^\d?$/.test(text)) {
             const newOtp = [...otp];
@@ -42,24 +74,61 @@ const LoginScreen = () => {
         }
     };
 
+    const handleOtpVerification = () => {
+        if (otp.join('').length < 4 || otp.some(d => d === '')) {
+            setOtpError('Please enter the complete 4-digit OTP');
+            return;
+        }
+        setOtpError('');
+        Alert.alert("OTP Verified", "Your OTP has been successfully verified.", [
+            {
+                text: "OK",
+                onPress: () => navigation.navigate('SetNewPasswordScreen')
+            }
+        ]);
+    };
 
+    const gotoRegisterPage = () => {
+        navigation.navigate("Register");
+    };
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* container for logo and text */}
             <View style={styles.logoImgTextContainer}>
                 <Image source={require("../../assets/XKillZ_Logo.png")} style={{ width: 150, height: 100 }} />
                 <Text style={styles.GladText}>Glad to have you back!</Text>
             </View>
-            {/* Container for login input field, text */}
+
             <View style={styles.loginTextFieldContainer}>
                 <Text style={styles.loginAccountText}>Login to your Account</Text>
-                <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                />
+                {emailError ? <Text style={{ color: 'red' }}>{emailError}</Text> : null}
+
                 <View style={styles.passwordContainer}>
-                    <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
-                    <FontAwesome name="eye-slash" style={styles.passwordIcon} />
+                    <TextInput
+                        placeholder="Password"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry={!showPassword}
+                        style={{ flex: 1 }}
+                    />
+                    <Pressable onPress={() => setShowPassword(!showPassword)}>
+                        <FontAwesome
+                            name={showPassword ? "eye" : "eye-slash"}
+                            style={styles.passwordIcon}
+                        />
+                    </Pressable>
                 </View>
-                {/* view for checkbox and reset password */}
+
+                {passwordError ? <Text style={{ color: 'red' }}>{passwordError}</Text> : null}
+
                 <View style={styles.checkboxTextResetPass}>
                     <Pressable onPress={() => setIsChecked(!isChecked)} style={styles.checkboxContainer}>
                         <View style={[styles.checkbox, isChecked && styles.checked]}>
@@ -67,7 +136,6 @@ const LoginScreen = () => {
                         </View>
                         <Text style={styles.remeberMeText}>Remember Me</Text>
                     </Pressable>
-                    {/* reset btn */}
 
                     <Pressable onPress={() => setShowPassResetModal(true)}>
                         <Text style={styles.resetPasswordText}>Reset Password?</Text>
@@ -75,22 +143,20 @@ const LoginScreen = () => {
                 </View>
             </View>
 
-            {/* sign in btn */}
             <View style={styles.loginBtnContainer}>
                 <Pressable style={styles.loginBtn} onPress={handleLogin}>
                     <Text style={styles.loginBtnText}>Sign In</Text>
                 </Pressable>
             </View>
-            {/* sign in with text */}
+
             <View style={styles.minusIconSignInText}>
                 <Entypo name="minus" />
                 <Text>Or Sign in with</Text>
                 <Entypo name="minus" />
             </View>
-            {/* social icons */}
+
             <View style={styles.socialIcons}>
                 <View style={styles.iconBox}>
-                    {/* <FontAwesome name="google" size={25} color=""/> */}
                     <Image source={require("../../assets/google.png")} style={{ height: 20, width: 20 }} />
                 </View>
                 <View style={styles.iconBox}>
@@ -107,33 +173,37 @@ const LoginScreen = () => {
                     <Text style={styles.registerTextBtn}>Register</Text>
                 </Pressable>
             </View>
-            {/* Modal */}
+
+            {/* Reset Password Modal */}
             <Modal
                 isVisible={showPassResetModal}
-                onBackdropPress={() => setShowPassResetModal(false)}
+                onBackdropPress={() => {
+                    setShowPassResetModal(false);
+                    setResetEmailError('');
+                }}
                 style={styles.modal}
                 animationIn="fadeIn"
                 animationOut="fadeOut"
             >
-                {/* Apply BlurView */}
-                {/* <BlurView style={styles.blur} blurType="light" blurAmount={1} /> */}
-
                 <View style={styles.modalContent}>
                     <Text style={styles.resetPassText}>Reset Your Password</Text>
-                    <Text style={{ marginBottom: "7%" }}>Type your email below and we’ll send you four digits OTP to your email account to reset password.</Text>
+                    <Text style={{ marginBottom: "7%" }}>
+                        Type your email below and we’ll send you four digits OTP to your email account to reset password.
+                    </Text>
                     <TextInput
                         placeholder="Enter your email"
                         style={styles.inputModal}
                         value={resetEmail}
                         onChangeText={setResetEmail}
                         keyboardType="email-address"
+                        autoCapitalize="none"
                     />
+                    {resetEmailError ? <Text style={{ color: 'red', marginBottom: 10 }}>{resetEmailError}</Text> : null}
+
                     <View style={styles.cancelSendBtn}>
-                        {/* Cancel Button */}
                         <Pressable style={[styles.btn, styles.cancelBtn]} onPress={() => setShowPassResetModal(false)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
                         </Pressable>
-                        {/* Send Button */}
                         <Pressable style={styles.btn} onPress={handlePasswordReset}>
                             <Text style={styles.sendBtnText}>Send</Text>
                         </Pressable>
@@ -144,20 +214,22 @@ const LoginScreen = () => {
             {/* OTP Modal */}
             <Modal
                 isVisible={showOtpModal}
-                onBackdropPress={() => setShowOtpModal(false)}
+                onBackdropPress={() => {
+                    setShowOtpModal(false);
+                    setOtpError('');
+                }}
                 style={styles.modal}
                 animationIn="fadeIn"
                 animationOut="fadeOut"
             >
                 <View style={styles.modalContent}>
                     <Text style={styles.resetPassText}>Verify OTP</Text>
-                    <Text style={{ marginBottom: "7%" }}>We sent a four-digit OTP to your {resetEmail}. Please enter it below.</Text>
+                    <Text style={{ marginBottom: "7%" }}>
+                        We sent a four-digit OTP to your {resetEmail}. Please enter it below.
+                    </Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 }}>
                         {otp.map((digit, index) => (
                             <TextInput
-                                // placeholder="Enter OTP"
-                                // style={styles.inputModal}
-                                // keyboardType="numeric"
                                 key={index}
                                 ref={ref => otpInputs[index] = ref}
                                 value={digit}
@@ -167,35 +239,25 @@ const LoginScreen = () => {
                                 style={styles.otpTextBox}
                             />
                         ))}
-
                     </View>
-
+                    {otpError ? <Text style={{ color: 'red', marginBottom: 10 }}>{otpError}</Text> : null}
 
                     <View style={styles.cancelOTPBtn}>
                         <Pressable style={[styles.btn, styles.cancelBtn]} onPress={() => setShowOtpModal(false)}>
                             <Text style={styles.cancelBtnText}>Cancel</Text>
                         </Pressable>
-                        <Pressable style={[styles.btn, styles.verifyOTPBtn]} onPress={() => Alert.alert("OTP Verified",
-                            "Your OTP has been successfully verified.",
-                            [
-                                {
-                                    text: "OK",
-                                    onPress: () => navigation.navigate('SetNewPasswordScreen') // Replace with your screen name
-                                }
-                            ])}>
+                        <Pressable style={[styles.btn, styles.verifyOTPBtn]} onPress={handleOtpVerification}>
                             <Text style={styles.sendBtnText}>Verify OTP</Text>
                         </Pressable>
                     </View>
                 </View>
             </Modal>
-
-
-
         </SafeAreaView>
     );
 };
 
 export default LoginScreen;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

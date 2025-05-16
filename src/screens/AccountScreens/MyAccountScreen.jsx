@@ -135,7 +135,7 @@ const MyAccountScreen = () => {
                 <View style={styles.btnContainer}>
                     <View style={styles.iconBtnBox}>
                         <AntDesign name="logout" size={20} color="#09B4E4" style={{marginEnd: 10}} />
-                        <Pressable>
+                        <Pressable onPress={()=>navigation.navigate('Login')}>
                             <Text  style={styles.btn}>Sign Out</Text>
                         </Pressable>
                     </View>
