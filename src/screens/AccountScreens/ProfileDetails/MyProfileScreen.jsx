@@ -4,10 +4,13 @@ import { SafeAreaView, Text, View, StyleSheet, TouchableOpacity, Pressable, Imag
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
+import { useSelector } from 'react-redux';
 
 
 const MyProfileScreen = () => {
     const navigation = useNavigation();
+    const user = useSelector(state => state.user.userInfo)
+    console.log(user)
     const aboutMeDescription = `I am a highly skilled and passionate Java Developer with over 8 years of experience in the software industry. With a strong background in backend development and application architecture, I have successfully built scalable and efficient systems across various domains. My ability to write clean, maintainable code and collaborate effectively with cross-functional teams has earned me a solid reputation.`
     return (
         <SafeAreaView style={styles.safeArea}>

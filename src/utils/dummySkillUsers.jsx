@@ -48,7 +48,7 @@ export const dummySkillUsers = {
     ],
     "Graphic Designer": [
         {
-            id: '1',
+            id: '5',
             name: 'Sophia Clark',
             title: 'UI/UX Designer',
             experience: '3 Years',
@@ -61,7 +61,7 @@ export const dummySkillUsers = {
     ],
     "Cooking": [
         {
-            id: '1',
+            id: '6',
             name: 'Liam Turner',
             title: 'Chef',
             experience: '4 Years',
@@ -71,10 +71,10 @@ export const dummySkillUsers = {
             comments: 98,
             image: require('../assets/cooking.webp'),
         },
-    ],
+    ], 
     "Coder": [
         {
-            id: '1',
+            id: '7',
             name: 'James Smith',
             title: 'Python Developer',
             experience: '4 Years',
@@ -87,8 +87,8 @@ export const dummySkillUsers = {
     ],
     "Dancer": [
         {
-            id: '1',
-            name: 'James Smith',
+            id: '8',
+            name: 'David Brown',
             title: 'Dance Teacher',
             experience: '4 Years',
             rating: 4,

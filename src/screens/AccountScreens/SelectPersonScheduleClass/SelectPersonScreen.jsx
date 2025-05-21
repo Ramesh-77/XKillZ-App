@@ -52,8 +52,8 @@ const SelectPersonScreen = () => {
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
                                     <Image source={user?.image} style={{ height: 50, width: 50, borderRadius: 25 }} />
                                     <View>
-                                        <Text style={{ fontWeight: "bold", fontSize: 18 }}>{user.name}</Text>
-                                        <Text style={{ fontSize: 15, opacity: 0.5 }}>{user.message}</Text>
+                                        <Text style={{ fontWeight: "bold", fontSize: 18 }}>{user?.name}</Text>
+                                        <Text style={{ fontSize: 15, opacity: 0.5 }}>{user?.message}</Text>
                                     </View>
                                 </View>
                                 <Fontisto

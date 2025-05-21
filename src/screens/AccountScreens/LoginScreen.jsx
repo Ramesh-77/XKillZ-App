@@ -7,6 +7,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal';
+import { useDispatch } from 'react-redux';
+import { login } from '../../redux/features/user/userSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,6 +24,7 @@ const LoginScreen = () => {
     const [showOtpModal, setShowOtpModal] = useState(false);
 
     const navigation = useNavigation();
+    const dispatch = useDispatch()
     const otpInputs = [];
 
     // Validation states
@@ -49,7 +53,26 @@ const LoginScreen = () => {
         }
 
         if (valid) {
-            navigation.navigate('Home');
+            // Hardcoded credentials for local validation
+            const correctEmail = 'user@gmail.com';  // Hardcoded email
+            const correctPassword = 'user';   // Hardcoded password
+
+            // Check if the entered credentials match the hardcoded values
+            if (email === correctEmail && password === correctPassword) {
+                // If credentials match, simulate successful login
+                const user = { email, password };  // In a real app, you'd typically store more user info
+                dispatch(login(user));  // Dispatch the login action
+
+                // Save user to AsyncStorage
+                AsyncStorage.setItem('user', JSON.stringify(user));
+
+                // Navigate to the Home screen after successful login
+                navigation.navigate('Home');
+            } else {
+                // If credentials don't match, show error
+                Alert.alert('Invalid credentials', 'Please check your email and password.');
+            }
+
         }
     };
 

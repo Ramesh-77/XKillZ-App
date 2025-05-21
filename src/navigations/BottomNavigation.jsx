@@ -17,7 +17,7 @@ const Tab = createBottomTabNavigator();
 
 const BottomNavigation = () => (
     <Tab.Navigator
-    initialRouteName='Account'
+    initialRouteName='Home'
         screenOptions={({ route }) => ({
             tabBarIcon: ({ focused, size  }) => {
                 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     SafeAreaView,
     Text,
@@ -13,11 +13,54 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadSwapState, saveSwapState, toggleSwap } from '../../redux/features/swap/swapSlice';
+import { dummySkillUsers } from '../../utils/dummySkillUsers';
 
 const SkillXChangeScreen = () => {
     const [activeTab, setActiveTab] = useState('send');
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState("Seen");
+
+    // to show swapped users only
+    const dispatch = useDispatch();
+    const swappedUsers = useSelector(state => state.swap.swappedUsers);
+    const isLoaded = useSelector(state => state.swap.isLoaded);
+    // Load swap state on mount
+    useEffect(() => {
+        dispatch(loadSwapState());
+    }, [dispatch]);
+
+    // Save swap state whenever swappedUsers change (and after load)
+    useEffect(() => {
+        if (isLoaded) {
+            dispatch(saveSwapState(swappedUsers));
+        }
+    }, [swappedUsers, isLoaded, dispatch]);
+
+    // Flatten all users from dummySkillUsers
+    const allUsers = Object.values(dummySkillUsers).flat();
+    // Filter users who are swapped (swappedUsers[user.id] === true)
+    const swappedUsersData = allUsers.filter(user => swappedUsers[user.id]);
+    const handleToggleSwap = (userId) => {
+        dispatch(toggleSwap(userId));
+    };
+    // received swap request from other users
+    const [swapRequest, setSwapRequests] = useState(
+        allUsers.map(user => ({ ...user, accepted: false }))
+    );
+
+    const handleAccept = id => {
+        setSwapRequests(prev =>
+            prev.map(user =>
+                user.id === id ? { ...user, accepted: true } : user
+            )
+        );
+    };
+
+    const handleDelete = id => {
+        setSwapRequests(prev => prev.filter(user => user.id !== id));
+    };
 
     return (
         <TouchableWithoutFeedback onPress={() => dropdownVisible && setDropdownVisible(false)}>
@@ -98,49 +141,69 @@ const SkillXChangeScreen = () => {
                             {/* dynamic content based on selected status */}
                             {/* for the content -> Seen */}
                             {selectedStatus === "Seen" && (
+
                                 <View>
-                                    <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop: 10 }}>All send swap request:</Text>
-                                    <View style={styles.profileCard}>
-                                        <View style={styles.profileHeader}>
-                                            <Pressable>
-                                                <Image source={require('../../assets/programmer.jpg')} style={styles.profileImage} />
-                                            </Pressable>
-                                            <View>
-                                                <Text style={styles.profileName}>Ramesh Pathak</Text>
-                                                <View style={styles.profileDetailRow}>
-                                                    <Text>RN Developer - </Text>
-                                                    <View style={styles.ratingStars}>
-                                                        <Ionicons name="star" size={15} color="#FFD95A" />
-                                                        <Ionicons name="star" size={15} color="#FFD95A" />
-                                                        <Ionicons name="star" size={15} color="#FFD95A" />
-                                                        <Ionicons name="star" size={15} color="#FFD95A" />
-                                                        <Ionicons name="star" size={15} color="#000000" />
+                                    {swappedUsersData?.length === 0 ? (
+                                        <Text style={{ fontSize: 20, fontWeight: 'bold', marginTop: 25, paddingBottom: 400 }}>No swap request sent yet.</Text>
+                                    ) : (
+                                        <React.Fragment>
+
+                                            <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop: 10 }}>All send swap request:</Text>
+
+                                            {swappedUsersData && swappedUsersData?.map(swapUser => (
+                                                <ScrollView key={swapUser?.id} style={styles.profileCard} showsVerticalScrollIndicator={false}>
+                                                    <View style={styles.profileHeader}>
+                                                        <Pressable>
+                                                            <Image source={swapUser?.image} style={styles.profileImage} />
+                                                        </Pressable>
+                                                        <View>
+                                                            <Text style={styles.profileName}>{swapUser?.name}</Text>
+                                                            <View style={styles.profileDetailRow}>
+                                                                <Text>{swapUser?.title} - </Text>
+                                                                <View style={styles.ratingStars}>
+                                                                    {[1, 2, 3, 4, 5].map((_, i) => (
+                                                                        <Ionicons
+                                                                            key={i}
+                                                                            name="star"
+                                                                            size={15}
+                                                                            color={i < swapUser?.rating ? '#FFD95A' : '#000'}
+                                                                        />
+                                                                    ))}
+                                                                    {/* <Ionicons name="star" size={15} color="#FFD95A" />
+                                                            <Ionicons name="star" size={15} color="#FFD95A" />
+                                                            <Ionicons name="star" size={15} color="#FFD95A" />
+                                                            <Ionicons name="star" size={15} color="#FFD95A" />
+                                                            <Ionicons name="star" size={15} color="#000000" /> */}
+                                                                </View>
+                                                            </View>
+                                                            <View style={styles.profileDetailRow}>
+                                                                <Text>Experience = </Text>
+                                                                <Text style={{ fontWeight: "bold" }}>{swapUser?.experience}</Text>
+                                                            </View>
+                                                            <View style={styles.statsRow}>
+                                                                <View style={styles.statItem}>
+                                                                    <Ionicons name="heart-outline" size={20} color="#000" />
+                                                                    <Text style={styles.statText}>{swapUser?.likes}</Text>
+                                                                </View>
+                                                                <View style={styles.statItem}>
+                                                                    <AntDesign name="swap" size={20} color="#000" />
+                                                                    <Text style={styles.statText}>{swapUser?.swaps}</Text>
+                                                                </View>
+                                                                <View style={styles.statItem}>
+                                                                    <Fontisto name="commenting" size={20} color="#000" />
+                                                                    <Text style={styles.statText}>{swapUser?.comments}</Text>
+                                                                </View>
+                                                            </View>
+                                                            <Pressable style={styles.unswapButton}>
+                                                                <Text style={styles.unswapText}>UNSWAP</Text>
+                                                            </Pressable>
+                                                        </View>
                                                     </View>
-                                                </View>
-                                                <View style={styles.profileDetailRow}>
-                                                    <Text>Experience = </Text>
-                                                    <Text style={{ fontWeight: "bold" }}>5 Years</Text>
-                                                </View>
-                                                <View style={styles.statsRow}>
-                                                    <View style={styles.statItem}>
-                                                        <Ionicons name="heart-outline" size={20} color="#000" />
-                                                        <Text style={styles.statText}>5K+</Text>
-                                                    </View>
-                                                    <View style={styles.statItem}>
-                                                        <AntDesign name="swap" size={20} color="#000" />
-                                                        <Text style={styles.statText}>60</Text>
-                                                    </View>
-                                                    <View style={styles.statItem}>
-                                                        <Fontisto name="commenting" size={20} color="#000" />
-                                                        <Text style={styles.statText}>128</Text>
-                                                    </View>
-                                                </View>
-                                                <Pressable style={styles.unswapButton}>
-                                                    <Text style={styles.unswapText}>UNSWAP</Text>
-                                                </Pressable>
-                                            </View>
-                                        </View>
-                                    </View>
+                                                </ScrollView>
+                                            ))}
+                                        </React.Fragment>
+                                    )}
+
                                 </View>
                             )}
 
@@ -277,22 +340,22 @@ const SkillXChangeScreen = () => {
                                             </View>
                                         </View>
                                     </View>
-                                    
+
                                 </View>
                             )}
 
-<View style={styles.infoBox}>
-                                        <Ionicons name="information-circle-outline" size={30} style={{ alignSelf: "center" }} />
-                                        <Text style={{ textAlign: "center" }}>
-                                            The Response of the person will be notified to your provided{' '}
-                                            <Text style={{ color: "#FF5823" }}>gmail</Text>{' '}
-                                            account. For more information, contact{' '}
-                                            <Text style={{ color: "#FF5823" }}>Help and Support</Text>.
-                                        </Text>
-                                    </View>
+                            <View style={styles.infoBox}>
+                                <Ionicons name="information-circle-outline" size={30} style={{ alignSelf: "center" }} />
+                                <Text style={{ textAlign: "center" }}>
+                                    The Response of the person will be notified to your provided{' '}
+                                    <Text style={{ color: "#FF5823" }}>gmail</Text>{' '}
+                                    account. For more information, contact{' '}
+                                    <Text style={{ color: "#FF5823" }}>Help and Support</Text>.
+                                </Text>
+                            </View>
                         </ScrollView>
                     ) : (
-                        <ScrollView contentContainerStyle={{ paddingHorizontal: 10 }} showsVerticalScrollIndicator={false}>
+                        <ScrollView style={{ paddingHorizontal: 10 }} showsVerticalScrollIndicator={false}>
                             {/* Content for RECEIVED */}
 
                             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
@@ -301,97 +364,119 @@ const SkillXChangeScreen = () => {
                                     <Text style={{ fontSize: 10, fontWeight: "bold", marginLeft: 10, color: "#808080", letterSpacing: 2 }}>Filter</Text>
                                 </View>
                             </View>
-                            <View>
+                            <View style={{ marginBottom: 150 }}>
                                 <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop: 10 }}>All received swap request:</Text>
-                                <View style={[styles.profileCard, { backgroundColor: "#ffffff" }]}>
-                                    <View style={styles.profileHeader}>
-                                        <Pressable>
-                                            <Image source={require('../../assets/programmer.jpg')} style={styles.profileImage} />
-                                        </Pressable>
-                                        <View>
-                                            <Text style={styles.profileName}>Ramesh Pathak</Text>
-                                            <View style={styles.profileDetailRow}>
-                                                <Text>RN Developer - </Text>
-                                                <View style={styles.ratingStars}>
-                                                    <Ionicons name="star" size={15} color="#FFD95A" />
-                                                    <Ionicons name="star" size={15} color="#FFD95A" />
-                                                    <Ionicons name="star" size={15} color="#FFD95A" />
-                                                    <Ionicons name="star" size={15} color="#FFD95A" />
-                                                    <Ionicons name="star" size={15} color="#000000" />
-                                                </View>
-                                            </View>
-                                            <View style={styles.profileDetailRow}>
-                                                <Text>Experience = </Text>
-                                                <Text style={{ fontWeight: "bold" }}>5 Years</Text>
-                                            </View>
-                                            <View style={styles.statsRow}>
-                                                <View style={styles.statItem}>
-                                                    <Ionicons name="heart-outline" size={20} color="#000" />
-                                                    <Text style={styles.statText}>5K+</Text>
-                                                </View>
-                                                <View style={styles.statItem}>
-                                                    <AntDesign name="swap" size={20} color="#000" />
-                                                    <Text style={styles.statText}>60</Text>
-                                                </View>
-                                                <View style={styles.statItem}>
-                                                    <Fontisto name="commenting" size={20} color="#000" />
-                                                    <Text style={styles.statText}>128</Text>
-                                                </View>
-                                            </View>
-                                            <Pressable style={[styles.unswapButton, { backgroundColor: "#09B4E4", marginBottom: 10 }]}>
-                                                <Text style={[styles.unswapText, { color: "#000000" }]}>ACCEPT</Text>
+                                {/* swap request from users */}
+
+                                {swapRequest && swapRequest?.map(swapUser => (
+                                    <View style={[styles.profileCard, { backgroundColor: "#ffffff" }]} key={swapUser?.id}>
+                                        <View style={styles.profileHeader}>
+                                            <Pressable>
+                                                <Image source={swapUser?.image} style={styles.profileImage} />
                                             </Pressable>
-                                            <Pressable style={[styles.unswapButton, { backgroundColor: "#8A8A8A" }]}>
-                                                <Text style={[styles.unswapText, { color: "#ffffff" }]}>DELETE</Text>
-                                            </Pressable>
+                                            <View>
+                                                <Text style={styles.profileName}>{swapUser?.name}</Text>
+                                                <View style={styles.profileDetailRow}>
+                                                    <Text>{swapUser?.title} - </Text>
+                                                    <View style={styles.ratingStars}>
+                                                        {[1, 2, 3, 4, 5].map((_, i) => (
+                                                            <Ionicons
+                                                                key={i}
+                                                                name="star"
+                                                                size={15}
+                                                                color={i < swapUser?.rating ? '#FFD95A' : '#000'}
+                                                            />
+                                                        ))}
+                                                        {/* <Ionicons name="star" size={15} color="#FFD95A" />
+                                                        <Ionicons name="star" size={15} color="#FFD95A" />
+                                                        <Ionicons name="star" size={15} color="#FFD95A" />
+                                                        <Ionicons name="star" size={15} color="#FFD95A" />
+                                                        <Ionicons name="star" size={15} color="#000000" /> */}
+                                                    </View>
+                                                </View>
+                                                <View style={styles.profileDetailRow}>
+                                                    <Text>Experience = </Text>
+                                                    <Text style={{ fontWeight: "bold" }}>{swapUser?.experience}</Text>
+                                                </View>
+                                                <View style={styles.statsRow}>
+                                                    <View style={styles.statItem}>
+                                                        <Ionicons name="heart-outline" size={20} color="#000" />
+                                                        <Text style={styles.statText}>{swapUser?.likes}</Text>
+                                                    </View>
+                                                    <View style={styles.statItem}>
+                                                        <AntDesign name="swap" size={20} color="#000" />
+                                                        <Text style={styles.statText}>{swapUser?.swaps}</Text>
+                                                    </View>
+                                                    <View style={styles.statItem}>
+                                                        <Fontisto name="commenting" size={20} color="#000" />
+                                                        <Text style={styles.statText}>{swapUser?.comments}</Text>
+                                                    </View>
+                                                </View>
+                                                <Pressable style={[styles.unswapButton, { backgroundColor: swapUser?.accepted ? "#90ee90" : "#09B4E4", marginBottom: 10 }]} onPress={() => handleAccept(swapUser?.id)}>
+                                                    <Text style={[styles.unswapText, { color: "#000000" }]}>{swapUser?.accepted ? "ACCEPTED" : "ACCEPT"}</Text>
+                                                </Pressable>
+                                                {!swapUser.accepted && (
+                                                    <Pressable onPress={() => handleDelete(swapUser?.id)} style={[styles.unswapButton, { backgroundColor: "#8A8A8A" }]}>
+                                                        <Text style={[styles.unswapText, { color: "#ffffff" }]}>DELETE</Text>
+                                                    </Pressable>
+                                                )}
+                                                {/* <Pressable style={[styles.unswapButton, { backgroundColor: "#8A8A8A" }]}>
+                                                    <Text style={[styles.unswapText, { color: "#ffffff" }]}>DELETE</Text>
+                                                </Pressable> */}
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                                <View style={[styles.profileCard, { backgroundColor: "#ffffff" }]}>
-                                    <View style={styles.profileHeader}>
-                                        <Pressable>
-                                            <Image source={require('../../assets/programmer.jpg')} style={styles.profileImage} />
-                                        </Pressable>
-                                        <View>
-                                            <Text style={styles.profileName}>Ramesh Pathak</Text>
-                                            <View style={styles.profileDetailRow}>
-                                                <Text>RN Developer - </Text>
-                                                <View style={styles.ratingStars}>
-                                                    <Ionicons name="star" size={15} color="#FFD95A" />
-                                                    <Ionicons name="star" size={15} color="#FFD95A" />
-                                                    <Ionicons name="star" size={15} color="#FFD95A" />
-                                                    <Ionicons name="star" size={15} color="#FFD95A" />
-                                                    <Ionicons name="star" size={15} color="#000000" />
-                                                </View>
-                                            </View>
-                                            <View style={styles.profileDetailRow}>
-                                                <Text>Experience = </Text>
-                                                <Text style={{ fontWeight: "bold" }}>5 Years</Text>
-                                            </View>
-                                            <View style={styles.statsRow}>
-                                                <View style={styles.statItem}>
-                                                    <Ionicons name="heart-outline" size={20} color="#000" />
-                                                    <Text style={styles.statText}>5K+</Text>
-                                                </View>
-                                                <View style={styles.statItem}>
-                                                    <AntDesign name="swap" size={20} color="#000" />
-                                                    <Text style={styles.statText}>60</Text>
-                                                </View>
-                                                <View style={styles.statItem}>
-                                                    <Fontisto name="commenting" size={20} color="#000" />
-                                                    <Text style={styles.statText}>128</Text>
-                                                </View>
-                                            </View>
-                                            <Pressable style={[styles.unswapButton, { backgroundColor: "#09B4E4", marginBottom: 10 }]}>
-                                                <Text style={[styles.unswapText, { color: "#000000" }]}>ACCEPT</Text>
-                                            </Pressable>
-                                            <Pressable style={[styles.unswapButton, { backgroundColor: "#8A8A8A" }]}>
-                                                <Text style={[styles.unswapText, { color: "#ffffff" }]}>DELETE</Text>
-                                            </Pressable>
-                                        </View>
-                                    </View>
-                                </View>
+                                ))}
                             </View>
+
+
+
+
+                            {/* <View style={[styles.profileCard, { backgroundColor: "#ffffff" }]}>
+                                    <View style={styles.profileHeader}>
+                                        <Pressable>
+                                            <Image source={require('../../assets/programmer.jpg')} style={styles.profileImage} />
+                                        </Pressable>
+                                        <View>
+                                            <Text style={styles.profileName}>Ramesh Pathak</Text>
+                                            <View style={styles.profileDetailRow}>
+                                                <Text>RN Developer - </Text>
+                                                <View style={styles.ratingStars}>
+                                                    <Ionicons name="star" size={15} color="#FFD95A" />
+                                                    <Ionicons name="star" size={15} color="#FFD95A" />
+                                                    <Ionicons name="star" size={15} color="#FFD95A" />
+                                                    <Ionicons name="star" size={15} color="#FFD95A" />
+                                                    <Ionicons name="star" size={15} color="#000000" />
+                                                </View>
+                                            </View>
+                                            <View style={styles.profileDetailRow}>
+                                                <Text>Experience = </Text>
+                                                <Text style={{ fontWeight: "bold" }}>5 Years</Text>
+                                            </View>
+                                            <View style={styles.statsRow}>
+                                                <View style={styles.statItem}>
+                                                    <Ionicons name="heart-outline" size={20} color="#000" />
+                                                    <Text style={styles.statText}>5K+</Text>
+                                                </View>
+                                                <View style={styles.statItem}>
+                                                    <AntDesign name="swap" size={20} color="#000" />
+                                                    <Text style={styles.statText}>60</Text>
+                                                </View>
+                                                <View style={styles.statItem}>
+                                                    <Fontisto name="commenting" size={20} color="#000" />
+                                                    <Text style={styles.statText}>128</Text>
+                                                </View>
+                                            </View>
+                                            <Pressable style={[styles.unswapButton, { backgroundColor: "#09B4E4", marginBottom: 10 }]}>
+                                                <Text style={[styles.unswapText, { color: "#000000" }]}>ACCEPT</Text>
+                                            </Pressable>
+                                            <Pressable style={[styles.unswapButton, { backgroundColor: "#8A8A8A" }]}>
+                                                <Text style={[styles.unswapText, { color: "#ffffff" }]}>DELETE</Text>
+                                            </Pressable>
+                                        </View>
+                                    </View>
+                                </View> */}
+
                         </ScrollView>
                     )}
                 </View>

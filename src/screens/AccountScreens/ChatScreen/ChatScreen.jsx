@@ -187,7 +187,7 @@ const ChatScreen = ({ route }) => {
                             </View>
                         );
                     })}
-                    <View style={{backgroundColor: "#AFE8F6", padding: 10}}>
+                    <View style={{ backgroundColor: "#AFE8F6", padding: 10 }}>
                         <Text>
                             {text1} <Text style={{ fontWeight: 'bold' }}>schedule</Text> {text2}
                         </Text>

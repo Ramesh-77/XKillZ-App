@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, Text, View, TextInput, StyleSheet, Pressable, Image, ScrollView } from 'react-native';
 import Header from '../../components/Header';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -7,12 +7,28 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { dummySkillUsers } from '../../utils/dummySkillUsers';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadSwapState, saveSwapState, toggleSwap } from '../../redux/features/swap/swapSlice';
 
 const SingleSkillList = ({ route }) => {
     const { skillName = 'SKill' } = route.params; // Get the skill name from the route params
     // State to handle the search query
     const [searchQuery, setSearchQuery] = useState('');
     const navigation = useNavigation();
+
+    const dispatch = useDispatch();
+    const swappedUsers = useSelector(state => state.swap.swappedUsers);
+    const isLoaded = useSelector(state => state.swap.isLoaded);
+
+    useEffect(() => {
+        dispatch(loadSwapState());
+    }, [dispatch]);
+    useEffect(() => {
+        if (isLoaded) {
+            dispatch(saveSwapState(swappedUsers));
+        }
+    }, [swappedUsers, isLoaded, dispatch]);
+
     // get the skill list user
     const users = dummySkillUsers[skillName] || []; // Default to an empty array if no users found for the skill
     // Filter users based on the search query (matching title or name)
@@ -22,6 +38,11 @@ const SingleSkillList = ({ route }) => {
             user.title.toLowerCase().includes(searchQuery.toLowerCase())
         )
         : users; // Show all users if no search query
+
+    // handle the swap btn
+    const handleToggleSwap = (userId) => {
+        dispatch(toggleSwap(userId));
+    };
 
 
     return (
@@ -58,7 +79,7 @@ const SingleSkillList = ({ route }) => {
                             <View key={user?.id} style={{ backgroundColor: "#09B4E4", width: "100%", borderRadius: 10, paddingVertical: 20, paddingStart: 15, marginBottom: 10 }} >
                                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 20 }}>
                                     <Pressable onPress={() => navigation.navigate('SingleSkillUserDetail', { user })}>
-                                    <Image source={user?.image} style={{ width: 100, height: 100, borderRadius: 50 }} />
+                                        <Image source={user?.image} style={{ width: 100, height: 100, borderRadius: 50 }} />
                                     </Pressable>
                                     <View>
                                         <Text style={{ fontSize: 20, fontWeight: "bold", letterSpacing: 1 }}>{user?.name}</Text>
@@ -99,7 +120,24 @@ const SingleSkillList = ({ route }) => {
                                                 <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 5 }}>{user?.comments}</Text>
                                             </View>
                                         </View>
-                                        <Pressable style={{ width: "100%", backgroundColor: "#000", alignItems: "center", paddingVertical: 8, borderRadius: 10 }}><Text style={{ letterSpacing: 1, fontWeight: 'bold', fontSize: 15, color: "#ffffff" }}>SWAP</Text></Pressable>
+                                        <Pressable
+                                            onPress={() => handleToggleSwap(user.id)}
+                                            style={{
+                                                width: "100%",
+                                                backgroundColor: swappedUsers[user.id] ? "#18A800" : "#000000",
+                                                alignItems: "center",
+                                                paddingVertical: 8,
+                                                borderRadius: 10,
+                                            }}>
+                                            <Text style={{
+                                                letterSpacing: 1,
+                                                fontWeight: 'bold',
+                                                fontSize: 15,
+                                                color: swappedUsers[user.id] ? "#ffffff" : "#ffffff",
+                                            }}>
+                                                {swappedUsers[user.id] ? "UNSWAP" : "SWAP"}
+                                            </Text>
+                                        </Pressable>
                                     </View>
                                 </View>
                             </View>

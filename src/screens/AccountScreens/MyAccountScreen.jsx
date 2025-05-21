@@ -5,10 +5,19 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../redux/features/user/userSlice';
 
 
 const MyAccountScreen = () => {
     const navigation = useNavigation();
+    const dispatch = useDispatch()
+    const handleLogout = async () => {
+        dispatch(logout());  // Dispatch logout action
+        await AsyncStorage.removeItem('user');  // Clear user data from AsyncStorage
+        navigation.navigate('Login');  // Navigate to login screen
+    };
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.header}>
@@ -135,7 +144,7 @@ const MyAccountScreen = () => {
                 <View style={styles.btnContainer}>
                     <View style={styles.iconBtnBox}>
                         <AntDesign name="logout" size={20} color="#09B4E4" style={{marginEnd: 10}} />
-                        <Pressable onPress={()=>navigation.navigate('Login')}>
+                        <Pressable onPress={handleLogout}>
                             <Text  style={styles.btn}>Sign Out</Text>
                         </Pressable>
                     </View>

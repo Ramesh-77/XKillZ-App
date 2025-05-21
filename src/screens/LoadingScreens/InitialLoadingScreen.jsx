@@ -5,7 +5,7 @@ const InitialLoadingScreen = ({navigation}) => {
     useEffect(() => {
         const timer = setTimeout(() => {
           navigation.replace('Pupil'); // replace to avoid going back to loader
-        }, 3000); // 5 seconds
+        }, 1000); // 1 seconds
     
         return () => clearTimeout(timer);
       }, [navigation]);
