@@ -4,8 +4,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
 
-
-
 const RegisterScreen = () => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('');
@@ -16,8 +14,6 @@ const RegisterScreen = () => {
     const [nameError, setNameError] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
-
-
 
     const handleRegister = () => {
         let valid = true;

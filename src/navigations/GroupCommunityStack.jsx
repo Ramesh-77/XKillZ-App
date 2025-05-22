@@ -2,7 +2,6 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import GroupCommunityScreen from '../screens/Group&CommunityScreens/GroupCommunityScreen';
 import SingleSkillList from '../screens/Group&CommunityScreens/SingleSkillList';
-import SingleSkillUserDetail from '../screens/Group&CommunityScreens/SingleSkillUserDetail';
 
 
 const Stack = createNativeStackNavigator();
@@ -22,13 +21,7 @@ const GroupCommunityStack = () => {
         headerShown: false,
         }} 
       />
-      <Stack.Screen 
-        name="SingleSkillUserDetail" 
-        component={SingleSkillUserDetail} 
-        options={{ 
-        headerShown: false,
-        }} 
-      />
+     
     </Stack.Navigator>
   );
 };

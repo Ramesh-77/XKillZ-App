@@ -4,7 +4,7 @@ import MyAccountScreen from '../screens/AccountScreens/MyAccountScreen';
 import MyProfileScreen from '../screens/AccountScreens/ProfileDetails/MyProfileScreen';
 import ClassScheduleScreen from '../screens/AccountScreens/ScheduleClass/ClassScheduleScreen';
 import SelectPersonScreen from '../screens/AccountScreens/SelectPersonScheduleClass/SelectPersonScreen';
-import ChatScreen from '../screens/AccountScreens/ChatScreen/ChatScreen';
+
 
 
 
@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator();
 
 const AccountStack = () => {
   return (
-    <Stack.Navigator initialRouteName='Account'>
+    <Stack.Navigator>
       <Stack.Screen
         name="Account"
         component={MyAccountScreen}
@@ -34,11 +34,7 @@ const AccountStack = () => {
         component={SelectPersonScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="ChatScreen"
-        component={ChatScreen}
-        options={{ headerShown: false }}
-      />
+     
     </Stack.Navigator>
   );
 };

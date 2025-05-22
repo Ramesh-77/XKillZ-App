@@ -67,31 +67,6 @@ const BottomNavigation = () => (
                     );
                 }
                 return null;
-                // else if (route.name === 'Group&Community') {
-                //     iconName = focused ? 'search' : 'search-outline';
-                    // } else if (route.name === 'Post') {
-                    //   iconName = focused ? 'add-circle' : 'add-circle-outline';
-                    // } else if (route.name === 'Messages') {
-                    //   iconName = focused ? 'chatbubble' : 'chatbubble-outline';
-                    // } else if (route.name === 'Profile') {
-                    //   iconName = focused ? 'person' : 'person-outline';
-                // }
-                // when focused, show the icon with white grey
-                // if (focused) {
-                //     return (
-                //       <View style={styles.iconContainer}>
-                //         <Ionicons name={iconName} size={25} color="#fff" />
-                //       </View>
-                //     );
-                //   }
-
-                // return (
-                    
-                //     <View>
-                //         <Ionicons name={iconName} size={25} color="#fff" />
-                //     </View>
-                // )
-
             },
             tabBarActiveTintColor: '#fff',
             tabBarInactiveTintColor: '#fff',

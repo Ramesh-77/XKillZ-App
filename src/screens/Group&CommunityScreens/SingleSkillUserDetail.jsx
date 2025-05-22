@@ -6,10 +6,12 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { useNavigation } from '@react-navigation/native';
 
 
 const SingleSkillUserDetail = ({ route }) => {
-    const { user } = route.params;
+    const { user, isSwaped, isAccepted, isDeclined } = route.params;
+    const navigation = useNavigation();
     const description = "I am a highly skilled and passionate Java Developer with over 8 years of experience in the software industry. With a strong background in backend development and application architecture, I have successfully built scalable and efficient systems across various domains. My ability to write clean, maintainable code and collaborate effectively with cross-functional teams has earned me a solid reputation and a consistent 4/5 performance rating."
     const achivements =
         [
@@ -20,6 +22,15 @@ const SingleSkillUserDetail = ({ route }) => {
             'Contributed to open-source projects, enhancing community engagement and collaboration.',
             'Mentored junior developers, fostering a culture of knowledge sharing and continuous learning.',
         ]
+
+//  // Determine the text for the main swap-related button
+//   const getSwapButtonText = () => {
+//     if (isAccepted) return 'ACCEPTED';
+//     if (isDeclined) return 'DECLINED';
+//     if (isSwaped === true) return 'SWAPPED';
+//     if (isSwaped === false) return 'UNSWAP';
+//     return 'SWAP'; // fallback default
+//   };
 
 
 
@@ -58,8 +69,85 @@ const SingleSkillUserDetail = ({ route }) => {
                                         <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 5 }}>{user?.comments}</Text>
                                     </View>
                                 </View>
-                                <Pressable style={{ width: "100%", backgroundColor: "#000", alignItems: "center", paddingVertical: 8, borderRadius: 10, marginBottom: 10 }}><Text style={{ letterSpacing: 1, fontWeight: 'bold', fontSize: 15, color: "#ffffff" }}>SWAP</Text></Pressable>
-                                <Pressable style={{ width: "100%", backgroundColor: "#CDCDCD", alignItems: "center", paddingVertical: 8, borderRadius: 10 }}><Text style={{ letterSpacing: 1, fontWeight: 'bold', fontSize: 15 }}>MESSAGE</Text></Pressable>
+                               {/* show button based on conditions */}
+                               {/* Button Logic */}
+                                {/* Buttons based on status */}
+                {isDeclined ? (
+                  <Pressable
+                    disabled={true}
+                    style={{
+                      width: '100%',
+                      backgroundColor: '#FF0000',
+                      alignItems: 'center',
+                      paddingVertical: 8,
+                      borderRadius: 10,
+                      marginBottom: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        letterSpacing: 1,
+                        fontWeight: 'bold',
+                        fontSize: 15,
+                        color: '#ffffff',
+                      }}
+                    >
+                      DECLINED
+                    </Text>
+                  </Pressable>
+                ) : (
+                  <>
+                    <Pressable
+                      disabled={isAccepted}
+                      style={{
+                        width: '100%',
+                        backgroundColor: isSwaped || isAccepted ? '#18A800' : '#000000',
+                        alignItems: 'center',
+                        paddingVertical: 8,
+                        borderRadius: 10,
+                        marginBottom: 10,
+                      }}
+                      onPress={() => {
+                        // You can add swap/unswap logic here if needed
+                      }}
+                    >
+                      <Text
+                        style={{
+                          letterSpacing: 1,
+                          fontWeight: 'bold',
+                          fontSize: 15,
+                          color: '#ffffff',
+                        }}
+                      >
+                        {isAccepted ? 'ACCEPTED' : isSwaped ? 'UNSWAP' : 'SWAP'}
+                      </Text>
+                    </Pressable>
+
+                    {(isAccepted || isSwaped === true || isSwaped === false) && (
+                      <Pressable
+                        style={{
+                          width: '100%',
+                          backgroundColor: '#CDCDCD',
+                          alignItems: 'center',
+                          paddingVertical: 8,
+                          borderRadius: 10,
+                        }}
+                        onPress={() => navigation.navigate('ChatScreen', { selectedUser: user })}
+                      >
+                        <Text
+                          style={{
+                            letterSpacing: 1,
+                            fontWeight: 'bold',
+                            fontSize: 15,
+                          }}
+                        >
+                          MESSAGE
+                        </Text>
+                      </Pressable>
+                    )}
+                  </>
+                )}
+
                             </View>
                         </View>
                     </View>

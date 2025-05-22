@@ -1,12 +1,65 @@
 import React from 'react';
-import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, Pressable, Image } from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+  Image,
+  ScrollView,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useNavigation } from '@react-navigation/native';
+
+const HEADER_HEIGHT = 70;
+
+const dummyCategories = [
+  {
+    title: 'Technology & Programming',
+    mentors: [
+      {
+        name: 'The Net Ninja',
+        rating: 4.9,
+        reviews: 17000,
+        image: require('../assets/coder.jpg'),
+      },
+      {
+        name: 'Traversy Media',
+        rating: 4.8,
+        reviews: 15200,
+        image: require('../assets/java_freelearning.png'),
+      },
+    ],
+  },
+  {
+    title: 'Design & Creativity',
+    mentors: [
+      {
+        name: 'Flux Academy',
+        rating: 4.7,
+        reviews: 13200,
+        image: require('../assets/graphic_designer.png'),
+      },
+      {
+        name: 'CharliMarieTV',
+        rating: 4.6,
+        reviews: 10800,
+        image: require('../assets/programmer.jpg'),
+      },
+    ],
+  },
+];
+
 
 const HomeScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Header */}
+      {/* Fixed Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => console.log('Menu pressed')}>
           <Ionicons name="menu" size={30} color="#fff" />
@@ -16,39 +69,77 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Content with padding */}
-      <View style={styles.container}>
+      {/* Main Scroll View */}
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+        nestedScrollEnabled={true}
+      >
         <Text style={styles.headingText}>Share to Shine, Learn to Rise</Text>
-        <Text style={{ fontSize: 15, marginVertical: "2%" }}>Connect with passionate people, Share what your know. Learn what you love</Text>
-        <Pressable style={styles.swappingSkillBtn}>
+        <Text style={styles.subText}>
+          Connect with passionate people, Share what you know. Learn what you
+          love.
+        </Text>
+
+        <Pressable style={styles.swappingSkillBtn} onPress={() => navigation.navigate('Group&Community')}>
           <Text style={styles.swappingSkillBtnText}>Start Swapping Skills</Text>
         </Pressable>
-        <View>
-          <Text style={{
-            fontSize:
-              20, fontWeight: "bold", marginTop: "10%", marginBottom: "5%"
-          }}>Free Learnings</Text>
-          {/* card */}
 
+        {/* Free Learnings Section */}
+        <View>
+          <Text style={styles.sectionTitle}>Free Learnings</Text>
+
+          {/* Large Card */}
           <View style={styles.imageTextCard}>
             <Image
-              source={require('../assets/java_freelearning.png')} // Replace with your image URL
-              style={{ borderWidth: 10, borderColor: "#4BC2E3", width: "100%", height: 150, borderRadius: 25 }}
+              source={require('../assets/java_freelearning.png')}
+              style={styles.cardImage}
               resizeMode="cover"
             />
-            <View>
-              <Text style={{ fontSize: 18, fontWeight: "bold", padding: "3%", textAlign: "center" }}>Fundamentals of Java Programming</Text>
-            </View>
+            <Text style={styles.cardTitle}>Fundamentals of Java Programming</Text>
             <View style={styles.textBookmarkIconContainer}>
               <Text>- Ramesh Pathak</Text>
-              <Feather name='bookmark' size={30} color="#ababab" />
+              <Feather name="bookmark" size={30} color="#ababab" />
             </View>
           </View>
 
+          {/* mentors sections */}
+          <Text style={styles.sectionTitle}>Top mentors in the community</Text>
 
+          {/* Horizontal Scroll Section */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            nestedScrollEnabled={true}
+            style={{ marginTop: 10 }}
+            contentContainerStyle={{ paddingRight: 30 }}
+          >
+            {dummyCategories.map((category, index) => (
+              <View key={index} style={styles.horizontalCard}>
+                <Text style={styles.horizontalCardTitle}>{category.title}</Text>
+
+                {category.mentors.map((mentor, i) => (
+                  <View key={i} style={styles.verticalCard}>
+                    <Image
+                      source={mentor.image}
+                      style={styles.mentorCardImage}
+                      resizeMode="cover"
+                    />
+                    <View style={{ marginLeft: 10 }}>
+                      <Text>{mentor.name}</Text>
+                      <Text>
+                        <AntDesign name="star" size={15} color="#FFD95A" /> {mentor.rating} ({mentor.reviews.toLocaleString()})
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ))}
+
+          </ScrollView>
         </View>
-      </View>
-
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -61,67 +152,99 @@ const styles = StyleSheet.create({
     backgroundColor: '#D4EDF3',
   },
   header: {
-    height: 70,
+    height: HEADER_HEIGHT,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#09B4E4',
-    padding: 20,
-    width: '100%',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1, // Makes sure the header stays on top
-    marginVertical: "5%"
+    paddingHorizontal: 20,
+    marginTop: '10%',
+    zIndex: 100,
+  },
+  scrollContainer: {
+    flex: 1,
   },
   container: {
-    flex: 1,
     padding: 30,
-    marginTop: 80,
+    paddingBottom: 50,
   },
   headingText: {
     fontSize: 25,
-    // textAlign: 'center',
     fontWeight: 'bold',
-    marginTop: "5%"
+  },
+  subText: {
+    fontSize: 15,
+    marginVertical: 10,
   },
   swappingSkillBtn: {
-
-    backgroundColor: "#09B4E4",
+    backgroundColor: '#09B4E4',
     padding: 15,
     borderRadius: 10,
-    marginTop: "5%",
-    alignItems: "center",
+    marginTop: 20,
+    alignItems: 'center',
   },
   swappingSkillBtnText: {
-    color: "#ffffff",
-    fontWeight: "bold",
+    color: '#ffffff',
+    fontWeight: 'bold',
     fontSize: 15,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
     letterSpacing: 1,
   },
-  // image
-
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 30,
+    marginBottom: 15,
+  },
   imageTextCard: {
-    width: "100%",
+    width: '100%',
     height: 270,
-    // borderBottomLeftRadius: 25,
-    // borderBottomRightRadius: 25,
     overflow: 'hidden',
-    // marginBottom: 20,
     borderWidth: 10,
-    borderColor: "#4BC2E3",
-    backgroundColor: "#ffffff",
+    borderColor: '#4BC2E3',
+    backgroundColor: '#ffffff',
+    borderRadius: 25,
+    marginBottom: 20,
+  },
+  cardImage: {
+    width: '100%',
+    height: 150,
     borderRadius: 25,
   },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    padding: '3%',
+    textAlign: 'center',
+  },
   textBookmarkIconContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: "5%",
-    paddingTop: "3%",
-    paddingBottom: "2%",
-    // marginTop: "5%",
-  }
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: '5%',
+    paddingTop: '3%',
+    paddingBottom: '2%',
+  },
+  horizontalCard: {
+    width: 300,
+    padding: 20,
+    marginRight: 20,
+    borderRadius: 10,
+    backgroundColor: '#ffffff',
+  },
+  horizontalCardTitle: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 15,
+  },
+  verticalCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  mentorCardImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
 });
