@@ -120,7 +120,7 @@ const SingleSkillList = ({ route }) => {
                                 <View key={user?.id} style={{ backgroundColor: "#09B4E4", width: "100%", borderRadius: 10, paddingVertical: 20, paddingStart: 15, marginBottom: 10 }} >
                                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 20 }}>
                                         <Pressable onPress={() => navigation.navigate('SingleSkillUserDetail', {
-                                            user, 
+                                            user,
                                             isSwaped: swappedUsers[user.id] || false,
                                             isAccepted: acceptedUsers[user.id] || false,
                                             isDeclined: declinedUsers[user.id] || false,

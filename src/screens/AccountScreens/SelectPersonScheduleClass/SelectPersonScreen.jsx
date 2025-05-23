@@ -1,14 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, Text, View, StyleSheet, TouchableOpacity, Pressable, ScrollView, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadSwapState } from '../../../redux/features/swap/swapSlice';
+import { dummySkillUsers } from '../../../utils/dummySkillUsers';
 
 const SelectPersonScreen = () => {
     const navigation = useNavigation();
     const [selectedId, setSelectedId] = useState(null);
+    const dispatch = useDispatch();
+      // Get acceptedUsers from redux state
+  const acceptedUsers = useSelector(state => state.swap.acceptedUsers);
+  const isLoaded = useSelector(state => state.swap.isLoaded);
+
+  // Load saved swap state on mount
+  useEffect(() => {
+    dispatch(loadSwapState());
+  }, [dispatch, isLoaded]);
+
+  // Flatten all users from dummySkillUsers into one array
+  // assuming dummySkillUsers is like { skillName1: [users], skillName2: [users], ... }
+  const allUsers = Object.values(dummySkillUsers).flat();
+    // Filter users that are accepted (exists in acceptedUsers object)
+  const acceptedUserList = allUsers.filter(user => acceptedUsers[user.id]);
+
+  
 
     const users = [
         { id: 1, name: 'Benjamin Engel', message: "We're thrilled to have you join...", image: `${require('../../../assets/graphic_designer.png')}` },
@@ -46,7 +66,7 @@ const SelectPersonScreen = () => {
 
                 <View>
                     {/* mapping the user details */}
-                    {users.map((user) => (
+                    {acceptedUserList.map((user) => (
                         <React.Fragment key={user.id}>
                             <Pressable style={styles.userDataContainer} onPress={() => toggleSelection(user.id)}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
@@ -74,7 +94,7 @@ const SelectPersonScreen = () => {
                         style={{ width: "90%", backgroundColor: "#09B4E4", paddingVertical: 10, borderRadius: 10, alignItems: "center", justifyContent: "center", marginTop: 20 }}
                         onPress={() => {
                             if (selectedId !== null) {  // Ensure there is a selection
-                                const user = users.find(u => u.id === selectedId);  // assuming one selected
+                                const user = acceptedUserList.find(u => u.id === selectedId);  // assuming one selected
                                 navigation.navigate('ChatScreen', { selectedUser: user });
                             } else {
                                 Alert.alert(

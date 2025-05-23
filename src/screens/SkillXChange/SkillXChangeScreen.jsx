@@ -30,6 +30,7 @@ const SkillXChangeScreen = () => {
     const swappedUsers = useSelector(state => state.swap.swappedUsers);
     const acceptedUsers = useSelector(state => state.swap.acceptedUsers);
     const declinedUsers = useSelector(state => state.swap.declinedUsers);
+    const isLoaded = useSelector(state => state.swap.isLoaded);
 
     // Load swap state on mount
     useEffect(() => {
@@ -44,7 +45,10 @@ const SkillXChangeScreen = () => {
     // }, [swappedUsers, isLoaded, dispatch]);
     // Save state whenever any of the states change
     useEffect(() => {
-        dispatch(saveSwapState(swappedUsers, acceptedUsers, declinedUsers));
+        if (isLoaded) {
+
+            dispatch(saveSwapState(swappedUsers, acceptedUsers, declinedUsers));
+        }
     }, [swappedUsers, acceptedUsers, declinedUsers, dispatch]);
 
     // Flatten all users from dummySkillUsers
@@ -383,10 +387,10 @@ const SkillXChangeScreen = () => {
                                 </View>
                             </View>
                             <View style={{ marginBottom: 150 }}>
-                            {swappedUsersData?.length === 0 ? ( <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop: 10 }}>No swap request received yet</Text>) : (
+                                {swappedUsersData?.length === 0 ? (<Text style={{ fontSize: 25, fontWeight: 'bold', marginTop: 10 }}>No swap request received yet</Text>) : (
 
-                                <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop: 10 }}>All received swap request:</Text>
-                            )}
+                                    <Text style={{ fontSize: 25, fontWeight: 'bold', marginTop: 10 }}>All received swap request:</Text>
+                                )}
                                 {/* swap request from users */}
 
                                 {swappedUsersData && swappedUsersData?.map(swapUser => {
